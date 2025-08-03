@@ -105,39 +105,60 @@ function onFrameImageUpload(e) {
 }
 
 function saveImage() {
-  const size = 400
+  const canvasSize = 800
   const canvas = document.createElement('canvas')
-  canvas.width = size
-  canvas.height = size
+  canvas.width = canvasSize
+  canvas.height = canvasSize
   const ctx = canvas.getContext('2d')
 
-  const mainImg = new window.Image()
-  const frameImg = new window.Image()
+  const mainImg = new Image()
+  const frameImg = new Image()
   let loaded = 0
+
+  mainImg.crossOrigin = 'anonymous'
+  frameImg.crossOrigin = 'anonymous'
 
   function tryDraw() {
     loaded++
     if ((!mainImage.value && loaded === 1) || (mainImage.value && loaded === 2)) {
+      ctx.clearRect(0, 0, canvasSize, canvasSize)
+
       if (mainImage.value) {
+        const iw = mainImg.naturalWidth
+        const ih = mainImg.naturalHeight
+        const aspectRatio = iw / ih
+
+        // Determine how to scale the image into the square preview box
+        let drawWidth, drawHeight
+        if (aspectRatio > 1) {
+          // Landscape image
+          drawWidth = canvasSize * zoom.value
+          drawHeight = (canvasSize / aspectRatio) * zoom.value
+        } else {
+          // Portrait image
+          drawHeight = canvasSize * zoom.value
+          drawWidth = canvasSize * aspectRatio * zoom.value
+        }
+
         ctx.save()
-        ctx.translate(size / 2, size / 2)
+        ctx.translate(canvasSize / 2, canvasSize / 2)
         ctx.rotate((rotation.value * Math.PI) / 180)
-        ctx.scale(zoom.value, zoom.value)
-        ctx.drawImage(mainImg, -size / 2, -size / 2, size, size)
+        ctx.drawImage(mainImg, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight)
         ctx.restore()
       }
+
       if (frameImage.value) {
-        ctx.drawImage(frameImg, 0, 0, size, size)
+        ctx.drawImage(frameImg, 0, 0, canvasSize, canvasSize)
       }
+
       const link = document.createElement('a')
-      link.download = 'framed-image.png'
+      link.download = 'framed-cropped.png'
       link.href = canvas.toDataURL('image/png')
       link.click()
     }
   }
 
   if (mainImage.value) {
-    mainImg.crossOrigin = 'anonymous'
     mainImg.onload = tryDraw
     mainImg.src = mainImage.value
   } else {
@@ -145,7 +166,6 @@ function saveImage() {
   }
 
   if (frameImage.value) {
-    frameImg.crossOrigin = 'anonymous'
     frameImg.onload = tryDraw
     frameImg.src = frameImage.value
   }
