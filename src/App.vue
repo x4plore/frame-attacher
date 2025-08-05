@@ -64,7 +64,7 @@
 import { ref, onMounted, watch } from 'vue'
 
 const mainImage = ref(null)
-const frameImage = ref('\\test\\default-frame.png')
+const frameImage = ref('\\frame-attacher\\default-frame.png')
 const zoom = ref(1)
 const rotation = ref(0)
 const darkMode = ref(false)
