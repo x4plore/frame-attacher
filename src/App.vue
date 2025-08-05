@@ -15,10 +15,6 @@
         <span>Upload Your Profile Picture</span>
         <input type="file" accept="image/*" @change="onMainImageUpload" />
       </label>
-      <label class="file-label">
-        <span>Upload Your Frame</span>
-        <input type="file" accept="image/*" @change="onFrameImageUpload" />
-      </label>
     </div>
     <div class="sliders">
       <label>
@@ -68,7 +64,7 @@
 import { ref, onMounted, watch } from 'vue'
 
 const mainImage = ref(null)
-const frameImage = ref(null)
+const frameImage = ref('\\test\\default-frame.png')
 const zoom = ref(1)
 const rotation = ref(0)
 const darkMode = ref(false)
@@ -97,11 +93,6 @@ watch(darkMode, (val) => {
 function onMainImageUpload(e) {
   const file = e.target.files[0]
   if (file) mainImage.value = URL.createObjectURL(file)
-}
-
-function onFrameImageUpload(e) {
-  const file = e.target.files[0]
-  if (file) frameImage.value = URL.createObjectURL(file)
 }
 
 function saveImage() {
@@ -152,7 +143,7 @@ function saveImage() {
       }
 
       const link = document.createElement('a')
-      link.download = 'framed-cropped.png'
+      link.download = 'framed-pfp.png'
       link.href = canvas.toDataURL('image/png')
       link.click()
     }
